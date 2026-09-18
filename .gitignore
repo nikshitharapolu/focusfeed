@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+.pytest_cache/
+data/*.json
+data/*.db
+data/.session-secret
+data/users/
+!data/.gitkeep
+*.zip
+.DS_Store
+.env
+models/

@@ -1,0 +1,14 @@
+fastapi==0.116.1
+uvicorn[standard]==0.35.0
+python-multipart==0.0.20
+pydantic==2.11.7
+pytest==8.4.1
+httpx==0.28.1
+sentence-transformers
+scikit-learn
+beautifulsoup4
+feedparser
+trafilatura
+APScheduler==3.11.0
+itsdangerous==2.2.0
+psycopg[binary]==3.2.10
