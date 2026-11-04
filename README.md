@@ -153,12 +153,26 @@ python3 -m uvicorn app.main:app --reload
 
 ## Useful endpoints
 
+Refreshes run in an RQ worker backed by Redis. Docker Compose starts both
+services. `POST /api/refresh` returns HTTP 202 and a job ID; poll
+`GET /api/refresh/{job_id}` for status. Job status is account-scoped.
+The browser loads the persisted briefing when the job finishes.
+Scheduled refreshes also enqueue work.
+
+After a completed refresh, open `/api/metrics` while signed in.
+`pipeline_seconds` measures worker execution, not queue wait.
+`near_duplicates_removed` and `near_duplicate_rate` compare candidates
+before and after semantic deduplication, before final diversity and size caps.
+The candidate count is after collection-level exact deduplication.
+Save the metrics after each run if comparing runs; the endpoint keeps the latest.
+
 | Method | Endpoint | Purpose |
 |---|---|---|
 | POST | `/api/auth/register` | Create an account |
 | POST | `/api/auth/login` | Start a session |
 | POST | `/api/import` | Build an interest profile |
-| POST | `/api/refresh` | Run retrieval, ranking, and summarization |
+| POST | `/api/refresh` | Queue a briefing refresh |
+| GET | `/api/refresh/{job_id}` | Check refresh job status |
 | GET | `/api/briefing` | Return the current briefing |
 | POST | `/api/feedback` | Record a relevance signal |
 | GET | `/api/metrics` | Return evaluation metrics |

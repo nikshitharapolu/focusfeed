@@ -1,4 +1,13 @@
 services:
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes: ["focusfeed_redis:/data"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 15
   postgres:
     image: postgres:17-alpine
     environment:
@@ -16,6 +25,7 @@ services:
     build: .
     ports: ["8000:8000"]
     environment:
+      REDIS_URL: redis://redis:6379/0
       DATABASE_URL: postgresql://focusfeed:focusfeed@postgres:5432/focusfeed
       OLLAMA_BASE_URL: http://host.docker.internal:11434
       OLLAMA_MODEL: qwen3:4b
@@ -23,8 +33,26 @@ services:
       FOCUSFEED_SCHEDULER: "false"
       FOCUSFEED_TIMEZONE: America/New_York
     depends_on:
+      redis:
+        condition: service_healthy
       postgres:
         condition: service_healthy
     extra_hosts: ["host.docker.internal:host-gateway"]
+  worker:
+    build: .
+    command: ["rq", "worker", "--url", "redis://redis:6379/0", "focusfeed"]
+    environment:
+      DATABASE_URL: postgresql://focusfeed:focusfeed@postgres:5432/focusfeed
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+      OLLAMA_MODEL: qwen3:4b
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      focusfeed:
+        condition: service_started
+    extra_hosts: ["host.docker.internal:host-gateway"]
 volumes:
+  focusfeed_redis:
   focusfeed_postgres:

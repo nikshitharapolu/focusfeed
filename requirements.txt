@@ -12,3 +12,5 @@ trafilatura
 APScheduler==3.11.0
 itsdangerous==2.2.0
 psycopg[binary]==3.2.10
+rq==2.4.1
+redis==5.2.1

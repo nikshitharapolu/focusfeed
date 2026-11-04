@@ -13,6 +13,30 @@ $("#upload").onclick=async()=>{const f=$("#file").files[0],out=$("#status");if(!
 function media(item){const video=item.video_url,url=item.image_url,tag=`<span class="category">${esc(item.retrieval_category||"For you")}</span>`;if(video&&/^https?:\/\//i.test(video))return `<div class="media"><video src="${esc(video)}" poster="${esc(url)}" controls preload="metadata"></video>${tag}</div>`;if(url&&/^https?:\/\//i.test(url))return `<div class="media"><img src="${esc(url)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.innerHTML='<div class=&quot;media-fallback&quot;>FocusFeed</div>'">${tag}</div>`;return `<div class="media"><div class="media-fallback">FocusFeed</div>${tag}</div>`}
 function renderDigest(items){const root=$("#digest");root.innerHTML="";if(!items?.length){root.innerHTML='<div class="empty-state"><span>✦</span><h3>No briefing yet</h3><p>Refresh to create a personalized edition.</p></div>';return}items.forEach(item=>{const c=item.citation||{},card=document.createElement("article");card.className="digest-card";const points=(item.key_points||[]).map(x=>`<li>${esc(x)}</li>`).join("");card.innerHTML=`${media(item)}<div class="card-body"><p class="meta">${esc(c.source||"Unknown source")} · ${c.published_at?new Date(c.published_at).toLocaleDateString():"Recently"}</p><h3>${esc(item.headline)}</h3><p class="summary">${esc(item.summary)}</p>${points?`<ul class="key-points">${points}</ul>`:""}${item.why_relevant?`<p class="relevance"><strong>Why it fits:</strong> ${esc(item.why_relevant)}</p>`:""}<p class="evidence">${item.evidence_sufficient?"✓ Grounded in extracted article text":"ⓘ Preview from limited feed evidence"}</p>${c.url?`<a class="source-link" href="${esc(c.url)}" target="_blank" rel="noopener noreferrer">Read original →</a>`:""}<div class="feedback-row"><button data-v="useful">✓ Useful</button><button data-v="more_like_this">＋ More like this</button><button data-v="not_interested">− Not for me</button></div></div>`;card.querySelectorAll(".feedback-row button").forEach(b=>b.onclick=async()=>{try{await api("/api/feedback",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({article_id:item.article_id,value:b.dataset.v,title:c.title||item.headline,retrieval_query:item.retrieval_query||"",source:c.source||""})});card.querySelectorAll(".feedback-row button").forEach(x=>x.classList.remove("selected"));b.classList.add("selected")}catch{}});root.append(card)})}
 async function loadBriefing(){try{const d=await api("/api/briefing");renderDigest(d.items)}catch{}}
-$("#refresh-digest").onclick=async()=>{const b=$("#refresh-digest"),out=$("#digest-status");b.disabled=true;out.textContent="Collecting, ranking and summarizing locally…";try{const d=await api("/api/refresh",{method:"POST"});renderDigest(d.items);out.textContent=`${d.summary_count} stories · ${d.collected_articles} candidates` }catch(e){out.textContent=e.message}finally{b.disabled=false}};
+$("#refresh-digest").onclick = async () => {
+  const button = $("#refresh-digest"), out = $("#digest-status");
+  button.disabled = true;
+  try {
+    const {job_id} = await api("/api/refresh", {method: "POST"});
+    out.textContent = "Refresh queued…";
+    for (;;) {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      const {status, result} = await api(`/api/refresh/${encodeURIComponent(job_id)}`);
+      if (status === "finished") {
+        const briefing = await api("/api/briefing");
+        renderDigest(briefing.items);
+        out.textContent = `${result.summary_count} stories · ${result.collected_articles} candidates · ${result.metrics.near_duplicates_removed} near-duplicates removed · ${result.metrics.pipeline_seconds}s processing`;
+        break;
+      }
+      if (!["queued", "started", "deferred", "scheduled"].includes(status))
+        throw new Error("Refresh did not complete. Check worker logs and try again.");
+      out.textContent = status === "started" ? "Building your briefing…" : "Refresh queued…";
+    }
+  } catch (error) {
+    out.textContent = error.message;
+  } finally {
+    button.disabled = false;
+  }
+};
 const hour=new Date().getHours();$("#greeting-time").textContent=hour<12?"morning":hour<18?"afternoon":"evening";
 api("/api/auth/me").then(d=>showApp(d.user)).catch(showAuth);
