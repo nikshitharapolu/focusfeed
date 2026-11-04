@@ -19,6 +19,7 @@ FocusFeed preserves the information value without the infinite scroll. A user up
 - Publisher citations and evidence-quality labels
 - RSS, social-image, Open Graph image, and video metadata extraction
 - PostgreSQL JSONB persistence for profiles, feeds, feedback, and metrics
+- Background briefing refreshes with account-scoped progress updates
 - Responsive FastAPI web interface
 - Docker Compose setup and automated tests
 
@@ -69,6 +70,7 @@ Semantic similarity captures conceptual relevance, while TF-IDF preserves exact 
 |---|---|
 | Backend | Python, FastAPI, Pydantic |
 | Database | PostgreSQL, JSONB, psycopg |
+| Background jobs | Redis, RQ |
 | Information retrieval | Sentence Transformers, MiniLM, TF-IDF, cosine similarity |
 | RAG and NLP | Ollama, Qwen3:4b, Trafilatura, BeautifulSoup |
 | Data sources | GDELT, Google News RSS, Hacker News API |
@@ -114,7 +116,7 @@ ollama serve
 
 If Ollama is already running, the command may report that port `11434` is in use. That is expected.
 
-### 3. Start FocusFeed and PostgreSQL
+### 3. Start the API, worker, Redis, and PostgreSQL
 
 From the repository root:
 
@@ -135,7 +137,7 @@ Open <http://127.0.0.1:8000>.
 
 ## Run the API directly on macOS
 
-Start PostgreSQL through Docker:
+Start PostgreSQL through Docker and make a local Redis instance available on port 6379.
 
 ```bash
 docker compose up -d postgres
@@ -148,16 +150,26 @@ python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install -r requirements.txt
 export DATABASE_URL=postgresql://focusfeed:focusfeed@localhost:5432/focusfeed
+export REDIS_URL=redis://localhost:6379/0
 python3 -m uvicorn app.main:app --reload
+```
+
+To process refreshes, run the worker from the repository root in a second
+terminal. Activate the same virtual environment and export the same
+`DATABASE_URL` and `REDIS_URL` values there first.
+
+```bash
+rq worker --url "$REDIS_URL" focusfeed
 ```
 
 ## Useful endpoints
 
 Refreshes run in an RQ worker backed by Redis. Docker Compose starts both
-services. `POST /api/refresh` returns HTTP 202 and a job ID; poll
-`GET /api/refresh/{job_id}` for status. Job status is account-scoped.
-The browser loads the persisted briefing when the job finishes.
-Scheduled refreshes also enqueue work.
+services. `POST /api/refresh` returns HTTP 202 and a job ID. The browser
+polls the account-scoped `GET /api/refresh/{job_id}` endpoint every two seconds
+and loads the briefing from PostgreSQL when the worker finishes. Scheduled
+refreshes use the same queue when enabled. The default Compose configuration
+disables scheduling.
 
 After a completed refresh, open `/api/metrics` while signed in.
 `pipeline_seconds` measures worker execution, not queue wait.
@@ -191,7 +203,8 @@ The tests cover parsing, query construction, feedback validation, password hashi
 FocusFeed records:
 
 - Candidate and ranked article counts
-- Duplicate-reduction rate
+- Worker processing time
+- Near-duplicate removal count and rate
 - Source diversity
 - Full-text grounding rate
 - Feedback volume and acceptance rate
@@ -203,14 +216,13 @@ Future evaluation could add manually labeled Precision@K, NDCG@K, diversity-awar
 - Some publishers block automated full-text extraction or place content behind paywalls.
 - Images and videos depend on metadata exposed by each publisher.
 - Local summarization speed depends on the user's hardware.
-- Scheduled refreshes require the application and Ollama to remain running.
+- Scheduled refreshes require the API, worker, Redis, PostgreSQL, and Ollama to remain running.
 - Development credentials in `docker-compose.yml` must be replaced before public deployment.
 
 ## Future improvements
 
 - Add user-controlled interest editing and source preferences
 - Learn long-term topic preferences from feedback events
-- Introduce background job processing for faster refresh requests
 - Add event clustering across publishers with representative-story selection
 - Support email or push delivery at chosen times
 - Add production deployment configuration, HTTPS, CSRF protection, and password reset
