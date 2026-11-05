@@ -1,0 +1,21 @@
+sample_id,faithful,citation_correct,notes
+38264402:A,0,1,Independent AI review. The article does not say Emmaus offers one-bedroom flats. Andrew Stevens proposed building more of them.
+38264402:B,0,1,Independent AI review. The 830 figure is for one-bedroom properties built across Wales in the year to March 2016. The article does not say the government supplied them for prison leavers.
+38537698:A,0,1,Independent AI review. The article attributes the alleged van theft specifically to Jordan Hill. The answer attributes it to the suspects collectively.
+38537698:B,0,1,Independent AI review. The article attributes the alleged van theft specifically to Jordan Hill. The answer attributes it to the suspects collectively.
+39070183:A,1,1,Independent AI review. The animal result and possible treatment implications are supported and the answer preserves the need for human research.
+39070183:B,1,1,Independent AI review. The answer locates the type 1 and type 2 results in mice and accurately describes beta-cell regeneration.
+38899892:A,1,1,Independent AI review. The body describes a proposed merger and presents competition and price effects as possibilities. The headline is imprecise but the summary makes the deal status clear.
+38899892:B,0,1,Independent AI review. Luxottica expressed confidence about clearance. The article does not say it predicted reduced competition or improved quality. Essilor leads in lenses and Luxottica in frames.
+39339718:A,0,1,Independent AI review. The headline reverses the allegation. Houvenaghel accused British Cycling.
+39339718:B,0,1,Independent AI review. The headline reverses the allegation. Houvenaghel accused British Cycling.
+34571446:A,0,1,Independent AI review. Badr and his partners took over an existing club. The five schools and four theatres were in Austin and did not belong to the club.
+34571446:B,0,1,Independent AI review. Badr and his partners took over an existing club. The answer also turns his metaphor about rescuing the business into a factual action.
+36892983:A,0,1,Independent AI review. BT did not sell its pension scheme. Complications involving the scheme and land were obstacles to a breakup.
+36892983:B,0,1,Independent AI review. Ofcom chief Sharon White proposed the new articles of association. BT chief Gavin Patterson said he hoped to reach a compromise.
+37732028:A,0,1,Independent AI review. The answer frames Champions League qualification and a good league start as current goals even though Rodgers said both were achieved.
+37732028:B,0,1,Independent AI review. Rodgers declined to frame the match as a step toward a treble. The article also says he had left Liverpool.
+32300397:A,0,1,Independent AI review. The evidence specifies a reduction in undergraduate places and does not establish postgraduate cuts.
+32300397:B,0,1,Independent AI review. The evidence specifies a reduction in undergraduate places and does not establish postgraduate cuts.
+32672009:A,0,1,Independent AI review. The two-week wording describes the kind of leaflet. The article does not establish two weeks of confusion.
+32672009:B,1,1,"Independent AI review. The incorrect inserts and apology are supported. The article says approximately 850 letters, a qualifier the answer omits."

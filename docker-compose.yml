@@ -23,7 +23,7 @@ services:
       retries: 15
   focusfeed:
     build: .
-    ports: ["8000:8000"]
+    ports: ["8001:8000"]
     environment:
       REDIS_URL: redis://redis:6379/0
       DATABASE_URL: postgresql://focusfeed:focusfeed@postgres:5432/focusfeed

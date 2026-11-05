@@ -200,6 +200,14 @@ The tests cover parsing, query construction, feedback validation, password hashi
 
 ## Evaluation
 
+### LoRA summarization pilot
+
+On 10 held-out BBC articles from XSum, the LoRA-tuned Qwen3-0.6B model produced valid JSON on 10/10 articles, up from 1/10 for the base model. Responses that were both valid JSON and within 60 words increased from 1/10 to 8/10.
+
+A separate blind AI review scored factual accuracy on the summary text alone at 4/10 for both models. The [fine-tuning instructions](finetuning/README.md) describe how to reproduce the experiment, and the [pilot results](finetuning/results/xsum-pilot/) include the automated report and blind review scores.
+
+### Digest metrics
+
 FocusFeed records:
 
 - Candidate and ranked article counts

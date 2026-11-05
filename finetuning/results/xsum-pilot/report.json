@@ -1,0 +1,70 @@
+{
+  "base": {
+    "valid_json": {
+      "passed": 1,
+      "scored": 10,
+      "total": 10
+    },
+    "within_word_limit": {
+      "passed": 1,
+      "scored": 10,
+      "total": 10
+    },
+    "no_generated_url": {
+      "passed": 10,
+      "scored": 10,
+      "total": 10
+    },
+    "median_summary_words_valid_outputs": 57,
+    "faithful": {
+      "passed": 1,
+      "scored": 10,
+      "total": 10
+    },
+    "citation_correct": {
+      "passed": 1,
+      "scored": 10,
+      "total": 10
+    }
+  },
+  "lora": {
+    "valid_json": {
+      "passed": 10,
+      "scored": 10,
+      "total": 10
+    },
+    "within_word_limit": {
+      "passed": 8,
+      "scored": 10,
+      "total": 10
+    },
+    "no_generated_url": {
+      "passed": 10,
+      "scored": 10,
+      "total": 10
+    },
+    "median_summary_words_valid_outputs": 52.0,
+    "faithful": {
+      "passed": 10,
+      "scored": 10,
+      "total": 10
+    },
+    "citation_correct": {
+      "passed": 10,
+      "scored": 10,
+      "total": 10
+    }
+  },
+  "human_judge_agreement": {
+    "faithful": {
+      "passed": 0,
+      "scored": 0,
+      "total": 0
+    },
+    "citation_correct": {
+      "passed": 0,
+      "scored": 0,
+      "total": 0
+    }
+  }
+}
